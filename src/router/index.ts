@@ -10,6 +10,7 @@ import DownloadKunRing from '@/components/projects/stableprojects/DownloadKunRin
 import Longtermmaintenanceprojects from '@/components/projects/Longtermmaintenanceprojects.vue';
 import DownloadBs9 from '@/components/projects/longtermmaintenanceprojects/DownloadBs9.vue';
 import HolidayCalendar from '@/components/functions/HolidayCalendar.vue';
+import AudioPlayerPage from '@/components/functions/AudioPlayerPage.vue';
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
@@ -22,7 +23,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/downloadtimesetout', component: DownloadTimeSetOut},
   { path: '/downloadkunring', component: DownloadKunRing},
   { path: '/longtermmaintenanceprojects', component: Longtermmaintenanceprojects },
-  { path: '/downloadbs9', component: DownloadBs9 }
+  { path: '/downloadbs9', component: DownloadBs9 },
+  { path: '/audioplayer', component: AudioPlayerPage },
 ]
 
 const router = createRouter({
