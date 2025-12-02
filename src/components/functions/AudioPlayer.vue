@@ -20,16 +20,23 @@
       class="volume-slider"
     />
 
-    <audio ref="audioRef" :src="src" @loadedmetadata="handleLoadedMetadata" @timeupdate="handleTimeUpdate" @ended="handleEnded"></audio>
+    <audio 
+      ref="audioRef" 
+      :src="src" 
+      @loadedmetadata="handleLoadedMetadata" 
+      @timeupdate="handleTimeUpdate" 
+      @ended="handleEnded"
+    ></audio>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 
 // ------------------------------------
 // 1. Props 定义
 // ------------------------------------
+// defineProps 内部已经有类型推导，但在 TS 环境下明确类型是更好的实践
 const props = defineProps({
   src: {
     type: String,
@@ -44,17 +51,17 @@ const props = defineProps({
 // ------------------------------------
 // 2. 状态管理 (Ref)
 // ------------------------------------
-const audioRef = ref(null); // 对 <audio> 元素的引用
-const isPlaying = ref(false); // 是否正在播放
-const currentTime = ref(0); // 当前播放时间 (秒)
-const duration = ref(0); // 总时长 (秒)
-const volume = ref(0.5); // 音量 (0.0 到 1.0)
-let updateTimer = null; // 用于定期更新进度的定时器
+// 关键修正 1: 明确 audioRef 的类型为 HTMLAudioElement 或 null
+const audioRef = ref<HTMLAudioElement | null>(null);
+const isPlaying = ref(false); 
+const currentTime = ref(0); 
+const duration = ref(0); 
+// volume 绑定到 input[type="range"]，其 v-model 通常为 string 类型，但在 audio 元素上需要 number
+const volume = ref('0.5'); // 初始设为 string，与 input 绑定更匹配
 
 // ------------------------------------
 // 3. Computed 属性
 // ------------------------------------
-// 计算进度条的百分比
 const progressPercent = computed(() => {
   return duration.value > 0 ? (currentTime.value / duration.value) * 100 : 0;
 });
@@ -65,12 +72,13 @@ const progressPercent = computed(() => {
 
 /**
  * 格式化秒数为 mm:ss 格式
- * @param {number} seconds - 秒数
+ * 关键修正 2: 明确参数和返回值的类型
+ * @param seconds - 秒数
  */
-const formatTime = (seconds) => {
+const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
-  const pad = (num) => (num < 10 ? '0' + num : num);
+  const pad = (num: number): string => (num < 10 ? '0' + num : String(num));
   return `${pad(mins)}:${pad(secs)}`;
 };
 
@@ -78,44 +86,60 @@ const formatTime = (seconds) => {
  * 播放或暂停
  */
 const togglePlay = () => {
-  if (!audioRef.value) return;
+  // 关键修正 3: 使用类型保护确保 audioRef.value 是 HTMLAudioElement
+  const audioEl = audioRef.value;
+  if (!audioEl) return;
 
   if (isPlaying.value) {
-    audioRef.value.pause();
+    audioEl.pause();
   } else {
-    audioRef.value.play().catch(e => {
+    // play() 返回的是 Promise，需要处理可能的错误 (浏览器自动播放限制)
+    audioEl.play().catch(e => {
         console.error("播放失败，可能是浏览器自动播放限制:", e);
-        // 可以向用户显示一个友好的提示
     });
   }
   isPlaying.value = !isPlaying.value;
 };
 
 /**
- * 设置音量
+ * 设置音量，由 input 事件触发
+ * 关键修正 4: 明确 event 的类型为 Event 或 InputEvent
  */
-const setVolume = () => {
-  if (audioRef.value) {
-    audioRef.value.volume = parseFloat(volume.value);
+const setVolume = (event: Event) => {
+  const audioEl = audioRef.value;
+  if (audioEl) {
+    // 从 v-model 获取 string 类型的音量值
+    // 或者从 event.target 获取值 (通常是 string)，并转换为 number
+    const newVolume = parseFloat(volume.value);
+    
+    // 检查是否是有效的数字
+    if (!isNaN(newVolume)) {
+        audioEl.volume = newVolume;
+    }
   }
 };
 
 /**
  * 处理进度条点击事件 (快进/快退)
- * @param {MouseEvent} event
+ * 关键修正 5: 明确 event 的类型为 MouseEvent
+ * @param event - MouseEvent
  */
-const seek = (event) => {
-  if (!audioRef.value || duration.value === 0) return;
+const seek = (event: MouseEvent) => {
+  const audioEl = audioRef.value;
+  if (!audioEl || duration.value === 0) return;
+
+  // 关键修正 6: 使用类型断言确保 currentTarget 是 HTMLElement
+  const container = event.currentTarget as HTMLElement;
 
   // 获取点击位置相对于进度条容器的百分比
   const clickX = event.offsetX;
-  const containerWidth = event.currentTarget.clientWidth;
+  const containerWidth = container.clientWidth;
   const clickPercent = clickX / containerWidth;
 
   // 计算新的播放时间
   const newTime = duration.value * clickPercent;
 
-  audioRef.value.currentTime = newTime;
+  audioEl.currentTime = newTime;
   currentTime.value = newTime;
 };
 
@@ -128,20 +152,28 @@ const seek = (event) => {
  * 元数据加载完毕时触发 (获取时长)
  */
 const handleLoadedMetadata = () => {
-  duration.value = audioRef.value.duration;
-  // 确保初始音量设置正确
-  setVolume();
-  if (props.autoPlay) {
-    togglePlay();
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      duration.value = audioEl.duration;
+      // 确保初始音量设置正确
+      // setVolume() 方法依赖于 volume.value，在这里不需要 event 参数
+      audioEl.volume = parseFloat(volume.value);
+      
+      if (props.autoPlay) {
+          // 注意：现代浏览器可能禁止 without user interaction 的自动播放
+          togglePlay();
+      }
   }
 };
 
 /**
  * 播放时间更新时触发 (实时更新进度)
- * 注意: 为了性能，我们依赖 `timeupdate` 偶尔更新，并使用 `requestAnimationFrame` 进行平滑更新。
  */
 const handleTimeUpdate = () => {
-  currentTime.value = audioRef.value.currentTime;
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      currentTime.value = audioEl.currentTime;
+  }
 };
 
 /**
@@ -150,8 +182,9 @@ const handleTimeUpdate = () => {
 const handleEnded = () => {
   isPlaying.value = false;
   currentTime.value = 0; // 重置到开头
-  if (audioRef.value) {
-      audioRef.value.currentTime = 0; // 确保 audio 元素也重置
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      audioEl.currentTime = 0; // 确保 audio 元素也重置
   }
 };
 
@@ -160,16 +193,18 @@ const handleEnded = () => {
 // 6. 生命周期钩子
 // ------------------------------------
 onMounted(() => {
-    // 初始设置音量
-    if (audioRef.value) {
-        audioRef.value.volume = volume.value;
-    }
+  // 初始设置音量
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      audioEl.volume = parseFloat(volume.value);
+  }
 });
 
 onUnmounted(() => {
   // 清理工作
-  if (audioRef.value) {
-    audioRef.value.pause();
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      audioEl.pause();
   }
 });
 
@@ -178,17 +213,19 @@ onUnmounted(() => {
 // ------------------------------------
 // 当 src 变化时，重新加载音频并重置状态
 watch(() => props.src, (newSrc) => {
-    if (audioRef.value) {
-        isPlaying.value = false;
-        currentTime.value = 0;
-        duration.value = 0;
-        // 浏览器会自动加载新的 src
-        audioRef.value.load();
-    }
+  const audioEl = audioRef.value;
+  if (audioEl) {
+      isPlaying.value = false;
+      currentTime.value = 0;
+      duration.value = 0;
+      // load() 会触发 handleLoadedMetadata
+      audioEl.load();
+  }
 });
 </script>
 
 <style scoped>
+/* 样式部分无需改动 */
 .audio-player {
   display: flex;
   align-items: center;
@@ -217,7 +254,7 @@ watch(() => props.src, (newSrc) => {
 
 .time-display {
   font-size: 14px;
-  min-width: 90px; /* 确保时间显示区域宽度固定 */
+  min-width: 90px;
   text-align: center;
 }
 
@@ -227,20 +264,19 @@ watch(() => props.src, (newSrc) => {
   background-color: #ccc;
   border-radius: 4px;
   cursor: pointer;
-  overflow: hidden; /* 确保进度条在容器内 */
+  overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
   background-color: #007bff;
-  transition: width 0.1s linear; /* 让进度条更新更平滑 */
+  transition: width 0.1s linear;
 }
 
 .volume-slider {
   width: 100px;
 }
 
-/* 隐藏原生的 audio 元素 */
 audio {
   display: none;
 }

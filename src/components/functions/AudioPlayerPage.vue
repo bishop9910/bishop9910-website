@@ -27,9 +27,9 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
-import AudioPlayer from './AudioPlayer.vue'; // 确保路径正确
+import AudioPlayer from './AudioPlayer.vue';
 
 // ------------------------------------
 // 状态管理

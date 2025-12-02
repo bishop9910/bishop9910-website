@@ -36,7 +36,9 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-const showText = ref("眩しさだけは 忘れなかった。")
+
+const showText = ref("眩しさだけは 忘れなかった。");
+
 </script>
 
 <style scoped>
