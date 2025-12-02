@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/downloadtimesetout', component: DownloadTimeSetOut},
   { path: '/downloadkunring', component: DownloadKunRing},
   { path: '/longtermmaintenanceprojects', component: Longtermmaintenanceprojects },
-  { path: '/downloadbs9', component: DownloadBs9 },
+  { path: '/downloadbs9', component: DownloadBs9 }
 ]
 
 const router = createRouter({
