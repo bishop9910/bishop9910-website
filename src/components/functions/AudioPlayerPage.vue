@@ -24,6 +24,7 @@
         :autoPlay="false"
       />
     </section>
+    <router-link to="/functions" class="btn" style="display:flex">返回功能</router-link>
   </main>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
   <div class="audio-player">
     <button @click="togglePlay" class="control-button">
-      {{ isPlaying ? '⏸️' : '▶️' }}
+      <img :src="isPlaying ? pause_sign : play_sign" alt="控制图标" style="height: 10px; width: 10px;">
     </button>
 
     <span class="time-display">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
@@ -32,6 +32,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
+import play_sign from "@/assets/img/play_sign.svg"
+import pause_sign from "@/assets/img/pause_sign.svg"
 
 // ------------------------------------
 // 1. Props 定义

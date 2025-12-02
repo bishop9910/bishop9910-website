@@ -11,6 +11,7 @@ import Longtermmaintenanceprojects from '@/components/projects/Longtermmaintenan
 import DownloadBs9 from '@/components/projects/longtermmaintenanceprojects/DownloadBs9.vue';
 import HolidayCalendar from '@/components/functions/HolidayCalendar.vue';
 import AudioPlayerPage from '@/components/functions/AudioPlayerPage.vue';
+import VideoPlayerPage from '@/components/functions/VideoPlayerPage.vue';
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Home },
@@ -25,6 +26,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/longtermmaintenanceprojects', component: Longtermmaintenanceprojects },
   { path: '/downloadbs9', component: DownloadBs9 },
   { path: '/audioplayer', component: AudioPlayerPage },
+  { path: '/videoplayer', component: VideoPlayerPage}
 ]
 
 const router = createRouter({
