@@ -71,7 +71,7 @@ interface VideoPlayerProps {
   loop?: boolean;
   /** 是否静音 */
   muted?: boolean;
-  /** 是否显示原生控制条 (如果为 false，你需要自己实现控制条) */
+  /** 是否显示原生控制条 */
   controls?: boolean;
   /** 视频封面图 */
   poster?: string;
@@ -81,7 +81,7 @@ const props = withDefaults(defineProps<VideoPlayerProps>(), {
   autoplay: false,
   loop: false,
   muted: false,
-  controls: true,
+  controls: false,
   poster: '',
 });
 
@@ -272,20 +272,21 @@ onMounted(() => {
 
 .video-player {
   background-color: #000;
-  width: 800px;
-  height: 350px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9; /* 保持16:9比例，兼容现代浏览器 */
   display: block;
 }
 
 /* 进度条容器 */
 .progress-container {
   position: relative;
-  width: 800px;
+  width: 100%;
   height: 6px;
-  background-color: #ddd;
+  background-color: #ffffff;
   cursor: pointer;
   margin-top: 8px;
-  border-radius: 3px; /* 圆角 */
+  border-radius: 3px;
   box-sizing: border-box;
   margin: 10px 0;
 }
@@ -297,21 +298,22 @@ onMounted(() => {
   left: 0;
   height: 100%;
   width: 0%;
-  background-color: #007bff; /* 播放进度颜色 */
+  background-color: #007bff;
   border-radius: 3px;
-  transition: width 0.1s ease; /* 平滑过渡 */
+  transition: width 0.1s ease;
+  z-index: 2;
 }
 
-/* 缓冲进度条 (在已播放进度条下方) */
+/* 缓冲进度条 */
 .progress-buffered {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 0%;
-  background-color: #ccc; /* 缓冲进度颜色 */
+  background-color: #ccc;
   border-radius: 3px;
-  z-index: 1; /* 在已播放条下方 */
+  z-index: 1;
 }
 
 /* 滑块 */
@@ -322,15 +324,89 @@ onMounted(() => {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background-color: #007bff; /* 滑块颜色 */
-  z-index: 2; /* 在最上层 */
+  background-color: #007bff;
+  z-index: 2;
   transition: opacity 0.2s;
-  opacity: 0; /* 默认隐藏 */
+  opacity: 0;
 }
 
-/* 鼠标悬停或拖拽时显示滑块 */
 .progress-container:hover .progress-slider,
 .progress-slider:active {
   opacity: 1;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .video-player {
+    /* 避免固定宽高溢出 */
+    max-width: 100vw;
+    height: auto;
+    /* 兜底：部分旧浏览器不支持 aspect-ratio */
+    padding-top: 56.25%; /* 16:9 的 padding-top 技巧 */
+    position: relative;
+    background-color: #000;
+  }
+
+  /* 若使用 padding-top 技巧，则需要嵌套 video 元素 */
+  /* 但我们目前 video 是直接子元素，所以更推荐用 aspect-ratio + fallback */
+  /* 已在 video-player 中用 aspect-ratio 实现，此处再加一层保险 */
+
+  .video-player::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%; /* 16:9 */
+  }
+
+  .video-player video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .progress-container {
+    height: 8px; /* 稍微加高便于触控 */
+  }
+
+  .progress-slider {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 提升移动端触控体验 */
+  .progress-container {
+    touch-action: manipulation; /* 禁用双击缩放，提升拖拽流畅性 */
+  }
+
+  .progress-slider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    /* 不可见但可点击 */
+  }
+
+  /* 时间文字微调 */
+  .video-player-container > p {
+    font-size: 0.85rem;
+    margin: 4px 0;
+  }
+}
+
+/* 超小屏（如 iPhone SE）进一步优化 */
+@media (max-width: 375px) {
+  .progress-slider {
+    width: 22px;
+    height: 22px;
+  }
+
+  .progress-container {
+    height: 10px;
+  }
 }
 </style>
