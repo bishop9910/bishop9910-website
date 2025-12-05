@@ -327,7 +327,7 @@ watch(() => props.src, (newSrc) => {
 }
 
 .volume-slider {
-  width: 100px;
+  width: 20%;
 }
 
 audio {
