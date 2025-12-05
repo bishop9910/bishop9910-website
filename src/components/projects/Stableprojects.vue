@@ -75,7 +75,7 @@ function createTSO(){
         <p>例如2025年9月1日凌晨零点为：2025-09-01 00:00:00</p>
         <form @submit.prevent="createTSO">
           <input v-model="formattedTime" placeholder="输入对应格式时间" required style="width:40%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;"/>
-          <button type="submit" class="btn">生成计时器</button>
+          <button type="submit" class="btn" style="margin-left: 5px;">生成计时器</button>
         </form><br/>
         <div v-if="countdown && !countdown.isExpired" id="timesetout">
         <h2>{{ countdown.title }}</h2>

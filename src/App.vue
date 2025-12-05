@@ -12,10 +12,21 @@
       </div>
     </nav>
   <router-view></router-view>
+
+  <Footer
+    icpText="苏ICP备2025223717号"
+    :policeText="`苏公网安备${policeNumber}号`"
+    :policeLinkNumber="policeNumber"
+    :startYear="2024"
+    copyrightOwner="bishop9910 个人博客"
+    :policeIconPath="PoliceIconSrcPath"
+  />
 </template>
 
 <script setup lang="ts">
-
+import Footer from './components/Footer.vue';
+import PoliceIconSrcPath from '@/assets/img/logo01.dd7ff50e.png';
+const policeNumber = "32030302308098"
 </script>
 
 <style scoped>
