@@ -1,6 +1,6 @@
 <template>
-  <div class="audio-player">
-    <div class="audio-player-content">
+  <div class="audio-player" v-if="props.display">
+    <div class="audio-player-content" v-if="props.controls">
       <button @click="togglePlay" class="control-button">
         <img :src="isPlaying ? pause_sign : play_sign" alt="控制图标" style="height: 10px; width: 10px;">
       </button>
@@ -44,6 +44,7 @@
       @loadedmetadata="handleLoadedMetadata" 
       @timeupdate="handleTimeUpdate" 
       @ended="handleEnded"
+      :loop="props.isLoop"
     ></audio>
   </div>
 </template>
@@ -78,7 +79,19 @@ const props = defineProps({
   author: {
     type: String,
     default: "unkown"
-  }
+  },
+  controls: {
+    type: Boolean,
+    default: true
+  },
+  isLoop: {
+    type: Boolean,
+    default: true
+  },
+  display: {
+    type: Boolean,
+    default: true
+  },
 });
 
 // ------------------------------------
@@ -138,7 +151,7 @@ const togglePlay = () => {
  * 设置音量，由 input 事件触发
  * 关键修正 4: 明确 event 的类型为 Event 或 InputEvent
  */
-const setVolume = (event: Event) => {
+const setVolume = () => {
   const audioEl = audioRef.value;
   if (audioEl) {
     // 从 v-model 获取 string 类型的音量值
@@ -277,6 +290,7 @@ watch(() => props.src, (newSrc) => {
 
 .audio-palyer-info {
   padding: 15px;
+  width: 100%;
 }
 
 .audio-info-text {
@@ -332,5 +346,19 @@ watch(() => props.src, (newSrc) => {
 
 audio {
   display: none;
+}
+
+@media (max-width: 599.98px) {
+  .audio-info-text {
+    margin: 0 1%;
+    padding: 3px;
+  }
+}
+
+@media (max-width: 798px) {
+  .audio-info-text {
+    margin: 0 3%;
+    padding: 5px;
+  }
 }
 </style>
