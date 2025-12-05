@@ -1,24 +1,42 @@
 <template>
   <div class="audio-player">
-    <button @click="togglePlay" class="control-button">
-      <img :src="isPlaying ? pause_sign : play_sign" alt="控制图标" style="height: 10px; width: 10px;">
-    </button>
+    <div class="audio-player-content">
+      <button @click="togglePlay" class="control-button">
+        <img :src="isPlaying ? pause_sign : play_sign" alt="控制图标" style="height: 10px; width: 10px;">
+      </button>
 
-    <span class="time-display">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
+      <span class="time-display">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
 
-    <div class="progress-bar-container" @click="seek">
-      <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
+      <div class="progress-bar-container" @click="seek">
+        <div class="progress-bar" :style="{ width: progressPercent + '%' }"></div>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        v-model="volume"
+        @input="setVolume"
+        class="volume-slider"
+      />
     </div>
 
-    <input
-      type="range"
-      min="0"
-      max="1"
-      step="0.01"
-      v-model="volume"
-      @input="setVolume"
-      class="volume-slider"
-    />
+    <div class="audio-palyer-info">
+      <img 
+        :src="props.poster" 
+        :alt="props.name"
+        style="height: 120px;width: 120px;"
+      />
+      <div class="audio-info-text">
+        <h1 style="display: inline-flexbox;">
+          {{ props.name }}
+        </h1>
+        <h2 style="display: inline-flexbox;">
+          作者：{{ props.author }}
+        </h2>
+      </div>
+    </div>
 
     <audio 
       ref="audioRef" 
@@ -32,8 +50,9 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
-import play_sign from "@/assets/img/play_sign.svg"
-import pause_sign from "@/assets/img/pause_sign.svg"
+import play_sign from "@/assets/img/play_sign.svg";
+import pause_sign from "@/assets/img/pause_sign.svg";
+import default_poster from '@/assets/img/bishop9910.jpg';
 
 // ------------------------------------
 // 1. Props 定义
@@ -47,6 +66,18 @@ const props = defineProps({
   autoPlay: {
     type: Boolean,
     default: false
+  },
+  name: {
+    type: String,
+    default: "music"
+  },
+  poster: {
+    type: String,
+    default: default_poster
+  },
+  author: {
+    type: String,
+    default: "unkown"
   }
 });
 
@@ -229,15 +260,35 @@ watch(() => props.src, (newSrc) => {
 <style scoped>
 /* 样式部分无需改动 */
 .audio-player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   max-width: 600px;
-  margin: 20px auto;
+}
+
+.audio-player-content {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  max-width: 600px;
+  margin: 20px 0 0 0;
+  align-items: center;
+}
+
+.audio-palyer-info {
+  padding: 15px;
+}
+
+.audio-info-text {
+  display: inline-block;
+  max-width: 400px;
+  margin: 0 4%;
+  padding: 10px;
+  text-align: center;
+}
+
+.audio-info-text h1{
+  margin: 0;
 }
 
 .control-button {
