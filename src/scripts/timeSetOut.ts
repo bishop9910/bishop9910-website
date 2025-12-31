@@ -6,6 +6,7 @@ export interface TimeSetOutOptions {
   title: string;
   time: string; // ISO 或 'YYYY-MM-DD HH:mm:ss'
   swal?: SweetAlert; // 兼容 Swal 或自定义 swal
+  isAlertExpired?: boolean;
 }
 
 export class TimeSetOut {
@@ -23,6 +24,7 @@ export class TimeSetOut {
 
   constructor(options: TimeSetOutOptions) {
     this.options = options;
+    this.options.isAlertExpired ??= true;
 
     // 初始化响应式状态
     this.title = ref(`距${options.title}还有`);
@@ -78,6 +80,9 @@ export class TimeSetOut {
   }
 
   private onExpired() {
+    if (!this.options.isAlertExpired){
+      return
+    }
     const { swal } = this.options;
     if (swal) {
       swal({

@@ -100,7 +100,7 @@ type CalendarDay = {
 
 // --- 状态 ---
 const now = new Date();
-const currentYear = ref(2025);
+const currentYear = ref(2026);
 const currentMonth = ref(Math.min(now.getMonth(), 11));
 const holidays = ref<Record<string, HolidayItem>>({});
 const nextRestDay = ref<{ date: string; name: string } | null>(null);
@@ -237,7 +237,6 @@ function initRestCountdown() {
   }
 
   if (!nextRestDay.value) return;
-
   const targetTime = `${nextRestDay.value.date} 00:00:00`;
   
   // 2. 创建新实例 (TimeSetOut 构造函数会自动调用 start)
@@ -247,7 +246,8 @@ function initRestCountdown() {
   countdownTimer.value = new TimeSetOut({
     title: nextRestDay.value.name,
     time: targetTime,
-    swal: typeof swal !== 'undefined' ? swal : undefined
+    swal: typeof swal !== 'undefined' ? swal : undefined,
+    isAlertExpired: false
   });
 }
 
