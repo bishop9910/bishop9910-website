@@ -21,7 +21,7 @@
           <div v-else-if="error" class="error">{{ error }}</div>
           <div v-else-if="currentType === 'md'" class="markdown-body" v-html="renderedContent"></div>
           <div v-else-if="currentType === 'pdf'" class="pdf-viewer">
-            <iframe :src="currentPdfUrl" width="100%" height="100%" frameborder="0"></iframe>
+            <PdfViewer :src="currentPdfUrl" width="100%" height="100%"/>
           </div>
         </div>
       </div>
@@ -36,6 +36,7 @@ import { useRoute } from 'vue-router';
 import { marked } from 'marked';
 import swal from 'sweetalert';
 import 'github-markdown-css/github-markdown-light.css';
+import PdfViewer from './PdfViewer.vue';
 
 const markdownModules = import.meta.glob(
   '/src/assets/notes/**/*.md',
