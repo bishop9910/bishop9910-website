@@ -25,6 +25,7 @@
         </div>
       </div>
     </section>
+    <router-link to="/" class="btn" style="display:flex">返回主页</router-link>
   </main>
 </template>
 
