@@ -2,7 +2,7 @@
 
 /* 页面内容容器 */
 main {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 140px);
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;

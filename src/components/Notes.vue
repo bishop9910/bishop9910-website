@@ -31,10 +31,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { marked } from 'marked'
-import 'github-markdown-css/github-markdown-light.css'
+import { ref, computed, watch, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { marked } from 'marked';
+import swal from 'sweetalert';
+import 'github-markdown-css/github-markdown-light.css';
 
 const markdownModules = import.meta.glob(
   '/src/assets/notes/**/*.md',
@@ -125,6 +126,14 @@ watch(
   },
   { immediate: true }
 )
+
+onMounted(()=>{
+  swal({
+    icon: 'info',
+    title: '必读',
+    text: '该页面只支持电脑端样式，暂不支持移动端。'
+  })
+})
 </script>
 
 <style scoped>

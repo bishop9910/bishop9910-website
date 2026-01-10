@@ -105,15 +105,6 @@ const copyYear = computed(() => {
 // 暗色模式检测
 const isDarkMode = ref(false)
 
-/**
-onMounted(() => {
-  const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  isDarkMode.value = darkQuery.matches
-  darkQuery.addEventListener('change', (e) => {
-    isDarkMode.value = e.matches
-  })
-})
-*/
 </script>
 
 <style scoped>
