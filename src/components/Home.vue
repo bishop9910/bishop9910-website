@@ -15,6 +15,12 @@
     </section>
 
     <section>
+      <h2>笔记</h2>
+      <p>学习时记的笔记</p>
+      <router-link to="/notes" class="btn">前往</router-link>
+    </section>
+
+    <section>
       <h2>项目</h2>
       <p>我开发的各种项目</p>
       <router-link to="/projects" class="btn">前往</router-link>

@@ -15,6 +15,6 @@
 <script setup lang="ts">
 import Sakura from "./Sakura.vue"
 import { ref } from "vue"
-const introduce = ref("我是一名臭自学代码的大学生，专注于 Python、Cpp、JS等语言")
+const introduce = ref("我是一名臭自学代码的大学生，专注于 Python、C#、JS等语言")
 const skills = ref("Vue2/3, electron, HTML5, CSS3, PySide, Go-lang等")
 </script>

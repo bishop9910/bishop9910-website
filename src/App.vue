@@ -6,6 +6,7 @@
           <li><router-link to="/" class="nav-link">主页</router-link></li>
           <li><router-link to="/about" class="nav-link">关于我</router-link></li>
           <li><router-link to="/contactme" class="nav-link">联系我</router-link></li>
+          <li><router-link to="/notes" class="nav-link">学习笔记</router-link></li>
           <li><router-link to="/projects" class="nav-link">项目</router-link></li>
           <li><router-link to="/functions" class="nav-link">功能</router-link></li>
         </ul>

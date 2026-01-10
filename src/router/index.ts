@@ -26,7 +26,11 @@ const routes: RouteRecordRaw[] = [
   { path: '/longtermmaintenanceprojects', component: Longtermmaintenanceprojects },
   { path: '/downloadbs9', component: DownloadBs9 },
   { path: '/audioplayer', component: AudioPlayerPage },
-  { path: '/videoplayer', component: VideoPlayerPage}
+  { path: '/videoplayer', component: VideoPlayerPage},
+  { path: '/notes/:pathMatch(.*)*', 
+    name: 'Notes', 
+    component: () => import('@/components/Notes.vue')
+  },
 ]
 
 const router = createRouter({
