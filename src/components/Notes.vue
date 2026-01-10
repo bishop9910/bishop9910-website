@@ -19,7 +19,10 @@
         <div class="content">
           <div v-if="loading" class="loading">加载中...</div>
           <div v-else-if="error" class="error">{{ error }}</div>
-          <div v-else class="markdown-body" v-html="renderedContent"></div>
+          <div v-else-if="currentType === 'md'" class="markdown-body" v-html="renderedContent"></div>
+          <div v-else-if="currentType === 'pdf'" class="pdf-viewer">
+            <iframe :src="currentPdfUrl" width="100%" height="100%" frameborder="0"></iframe>
+          </div>
         </div>
       </div>
     </section>
@@ -36,11 +39,17 @@ import 'github-markdown-css/github-markdown-light.css'
 const markdownModules = import.meta.glob(
   '/src/assets/notes/**/*.md',
   { eager: true, import: 'default', query: '?raw' }
-) as Record<string, string>
+) as Record<string, string>;
+
+const pdfModules = import.meta.glob(
+  '/src/assets/notes/**/*.pdf',
+  { eager: true, import: 'default', query: '?url' }
+) as Record<string, string>;
 
 interface NavItem {
-  path: string
-  title: string
+  path: string;
+  title: string;
+  type: 'md' | 'pdf';
 }
 
 marked.setOptions({
@@ -49,46 +58,69 @@ marked.setOptions({
   breaks: true, 
 })
 
-const navItems: NavItem[] = []
-const contentMap: Record<string, string> = {}
+const navItems: NavItem[] = [];
+const contentMap: Record<string, string> = {};
+const pdfUrlMap: Record<string, string> = {};
 
 for (const filePath in markdownModules) {
   const normalizedPath = filePath
     .replace(/^\/src\/assets\/notes/, '')
     .replace(/\.md$/, '')
-    .replace(/\/index$/, '')
+    .replace(/\/index$/, '');
 
-  const title = normalizedPath.split('/').pop() || "Home"
-  navItems.push({ path: normalizedPath, title })
+  const title = normalizedPath.split('/').pop() || "Home";
+  navItems.push({ path: normalizedPath, title,  type: 'md'});
 
-  let html = marked.parse(markdownModules[filePath]!) as string
-  contentMap[normalizedPath] = html
+  let html = marked.parse(markdownModules[filePath]!) as string;
+  contentMap[normalizedPath] = html;
 }
 
-const route = useRoute()
-const loading = ref(false)
-const error = ref('')
-const renderedContent = ref('')
+for (const filePath in pdfModules) {
+  const normalizedPath = filePath
+    .replace(/^\/src\/assets\/notes/, '')
+    .replace(/\.pdf$/, '');
+  const title = normalizedPath.split('/').pop() || "PDF";
+  navItems.push({ path: normalizedPath, title, type: 'pdf' });
+  pdfUrlMap[normalizedPath] = pdfModules[filePath]!;
+}
+
+const route = useRoute();
+const loading = ref(false);
+const error = ref('');
+const renderedContent = ref('');
+const currentType = ref<'md' | 'pdf' | null>(null);
+const currentPdfUrl = ref('');
 
 const currentNotePath = computed(() => {
-  let path = route.path.replace(/^\/notes/, '')
+  let path = route.path.replace(/^\/notes/, '');
   if (path === '' || path === '/') {
-    return ''
+    return '';
   }
-  return path
+  return path;
 })
 
 watch(
   currentNotePath,
   (path) => {
-    loading.value = false
-    const content = contentMap[path]
-    if (content !== undefined) {
-      renderedContent.value = content
-      error.value = ''
-    } else {
-      error.value = '未找到对应的笔记文件'
-      renderedContent.value = ''
+    loading.value = false;
+
+    if (contentMap[path] !== undefined) {
+      renderedContent.value = contentMap[path];
+      currentType.value = 'md';
+      error.value = '';
+      currentPdfUrl.value = '';
+    }
+    else if (pdfUrlMap[path] !== undefined) {
+      currentPdfUrl.value = pdfUrlMap[path];
+      currentType.value = 'pdf';
+      renderedContent.value = '';
+      error.value = '';
+    }
+    else {
+      error.value = '未找到对应的笔记或文档';
+      renderedContent.value = '';
+      currentPdfUrl.value = '';
+      currentType.value = null;
     }
   },
   { immediate: true }
@@ -152,5 +184,10 @@ watch(
   text-align: center;
   padding: 40px;
   color: #666;
+}
+
+.pdf-viewer{
+  width: 100%;
+  height: 100%;
 }
 </style>
