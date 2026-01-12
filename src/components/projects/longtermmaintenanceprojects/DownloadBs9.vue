@@ -5,7 +5,11 @@
         <h1>bs9 code</h1>
         <p>点击下方按钮下载bs9 code</p>
         <!-- 下载按钮 -->
-        <h3>最新版本-v1.2.175 2025/8/18</h3>
+        <h3>普通版本-v1.2.183 2025/12/16</h3>
+        <button class="btn" @click="version = '1.2.183';showModal = true">点击下载</button>
+        <h3>普通版本-v1.2.180 2025/12/14</h3>
+        <button class="btn" @click="version = '1.2.180';showModal = true">点击下载</button>
+        <h3>普通版本-v1.2.175 2025/8/18</h3>
         <button class="btn" @click="version = '1.2.175';showModal = true">点击下载</button>
         <h3>中古版本-v9.2.1 2025/7/9</h3>
         <button class="btn" @click="version = '9.2.1';showModal = true">点击下载</button>
@@ -54,7 +58,7 @@ onMounted(()=>{
   swal({
     icon:'info',
     title:'必读',
-    text:"每个版本的bs9各不相通，请按需下载\n最新版本向来优化和加密更好"
+    text:"每个版本的bs9各不相通，请按需下载\n<最新版本向来优化更好>"
   })
 })
 </script>
