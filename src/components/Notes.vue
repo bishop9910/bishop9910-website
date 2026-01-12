@@ -31,10 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { marked } from 'marked';
-import swal from 'sweetalert';
 import 'github-markdown-css/github-markdown-light.css';
 import PdfViewer from './PdfViewer.vue';
 
@@ -127,14 +126,6 @@ watch(
   },
   { immediate: true }
 )
-
-onMounted(()=>{
-  swal({
-    icon: 'info',
-    title: '必读',
-    text: '该页面只支持电脑端样式，暂不支持移动端。'
-  })
-})
 </script>
 
 <style scoped>
@@ -151,6 +142,7 @@ onMounted(()=>{
   border-radius: 8px;
   padding: 16px;
   overflow-y: auto;
+  min-width: 200px;
 }
 
 .sidebar h2 {
@@ -174,6 +166,7 @@ onMounted(()=>{
   padding: 6px 10px;
   border-radius: 4px;
   display: block;
+  transition: background-color 0.2s; /* 添加过渡效果 */
 }
 
 .sidebar a.active,
@@ -188,6 +181,7 @@ onMounted(()=>{
   border-radius: 8px;
   overflow-y: auto;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-height: 0;
 }
 
 .loading, .error {
@@ -199,5 +193,184 @@ onMounted(()=>{
 .pdf-viewer{
   width: 100%;
   height: 100%;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  main {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .notes-container {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 60px);
+    gap: 12px;
+    padding: 12px;
+    overflow: hidden;
+  }
+  
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 40vh;
+    padding: 12px;
+    margin-bottom: 0;
+    border-radius: 8px;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+  
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  
+  .sidebar li {
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  
+  .sidebar a {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 1px solid #e0e0e0;
+    background: white;
+  }
+  
+  .content {
+    flex: none;
+    width: 100%;
+    height: 55vh;
+    min-height: 300px;
+    padding: 16px;
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  .content:deep(.markdown-body) {
+    font-size: 14px;
+  }
+  
+  .content:deep(.markdown-body) h1 {
+    font-size: 1.5rem;
+  }
+  
+  .content:deep(.markdown-body) h2 {
+    font-size: 1.3rem;
+  }
+  
+  .content:deep(.markdown-body) h3 {
+    font-size: 1.1rem;
+  }
+  
+  .pdf-viewer {
+    height: calc(55vh - 32px);
+  }
+  
+  .btn {
+    width: calc(100% - 24px);
+    margin: 0 12px 12px;
+    padding: 12px;
+    font-size: 1rem;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .notes-container {
+    padding: 8px;
+    gap: 8px;
+  }
+  
+  .sidebar {
+    padding: 10px;
+    max-height: 35vh;
+  }
+  
+  .sidebar h2 {
+    font-size: 1rem;
+  }
+  
+  .sidebar a {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .content {
+    padding: 12px;
+    height: 50vh;
+    min-height: 250px;
+  }
+  
+  .btn {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* 平板设备适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .notes-container {
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .sidebar {
+    width: 30%;
+    min-width: 180px;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  .sidebar a {
+    min-height: 44px; /* 提高触摸区域 */
+    display: flex;
+    align-items: center;
+  }
+  
+  .sidebar a.active {
+    background-color: #d0d0d0;
+  }
+  
+  .btn {
+    min-height: 44px;
+  }
+}
+
+/* 横屏模式适配 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .notes-container {
+    flex-direction: row;
+    height: calc(100vh - 60px);
+  }
+  
+  .sidebar {
+    width: 30%;
+    max-height: calc(100vh - 100px);
+  }
+  
+  .content {
+    height: calc(100vh - 100px);
+  }
+  
+  .pdf-viewer {
+    height: calc(100vh - 132px);
+  }
 }
 </style>

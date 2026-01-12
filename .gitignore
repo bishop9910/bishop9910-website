@@ -2,6 +2,7 @@
 /dist
 /.vscode
 /public/assets/files
+/src/assets/notes
 
 # Logs
 logs
